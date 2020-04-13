@@ -25,7 +25,6 @@ class Line {
       }
     }
 
-    offsets = [];
     path = path;
   }
 }

@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:drawful_impl/action_buttons.dart';
 import 'package:drawful_impl/line_painter.dart';
+import 'package:drawful_impl/pages/view_drawing_page.dart';
 import 'package:flutter/material.dart';
 import 'package:drawful_impl/models/line.dart';
 
@@ -59,11 +60,6 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         onPanEnd: (details) {
           Line currentLine = _lines.last;
-
-          if (currentLine.offsets.length == 10) {
-            return;
-          }
-
           setState(() => currentLine.getPathFromOffset());
         },
         child: Center(
@@ -99,6 +95,15 @@ class _MyHomePageState extends State<MyHomePage> {
         onClearPress: () => setState(() {
           _lines = [];
         }),
+        onViewPress: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (ctx) => ViewDrawingPage(
+              getPictureFromCanvas(_lines),
+              size: MediaQuery.of(context).size,
+            ),
+            maintainState: true,
+          ),
+        ),
       ),
     );
   }
