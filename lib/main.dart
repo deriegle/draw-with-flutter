@@ -29,19 +29,9 @@ class MyHomePage extends StatefulWidget {
 
 const MAX_POINT_SIZE = 10.0;
 const MIN_POINT_SIZE = 1.0;
+const INCREMENT = 2;
 
-const List<Color> COLORS = [
-  Colors.red,
-  Colors.blue,
-  Colors.green,
-  Colors.purple,
-  Colors.blue,
-  Colors.black,
-  Colors.grey,
-  Colors.blueGrey,
-  Colors.amber,
-  Colors.orange,
-];
+const List<Color> COLORS = Colors.primaries;
 
 class Line {
   Color color;
@@ -87,29 +77,40 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: ActionButtons(
         currentStrokeColor: currentStrokeColor,
         currentStrokeWidth: currentStrokeWidth,
-        onColorChangePress: () => setState(() {
-          var random = Random();
-
-          currentStrokeColor = COLORS[random.nextInt(COLORS.length)];
-        }),
+        onColorChangePress: () => setState(() => currentStrokeColor = getRandomColor()),
         onStrokeIncrement: () => setState(() {
           if (currentStrokeWidth == MAX_POINT_SIZE) {
             return;
           }
-          currentStrokeWidth += 1;
+          currentStrokeWidth = currentStrokeWidth + INCREMENT > MAX_POINT_SIZE
+              ? MAX_POINT_SIZE
+              : currentStrokeWidth + INCREMENT;
         }),
         onStrokeDecrement: () => setState(() {
           if (currentStrokeWidth == MIN_POINT_SIZE) {
             return;
           }
-
-          currentStrokeWidth -= 1;
+          currentStrokeWidth = currentStrokeWidth - INCREMENT < MIN_POINT_SIZE
+              ? MIN_POINT_SIZE
+              : currentStrokeWidth - INCREMENT;
         }),
         onClearPress: () => setState(() {
           _lines = [];
         }),
       ),
     );
+  }
+
+  Color getRandomColor() {
+    var random = Random();
+    int currentColorIndex = COLORS.indexOf(currentStrokeColor);
+    int randomIndex = random.nextInt(COLORS.length);
+
+    while (randomIndex == currentColorIndex) {
+      randomIndex = random.nextInt(COLORS.length);
+    }
+
+    return COLORS[randomIndex];
   }
 }
 
@@ -137,14 +138,14 @@ class ActionButtons extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Container(
-            height: currentStrokeWidth,
-            width: currentStrokeWidth,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: currentStrokeColor,
-            ),
-          ),
+          // Container(
+          //   height: currentStrokeWidth,
+          //   width: currentStrokeWidth,
+          //   decoration: BoxDecoration(
+          //     shape: BoxShape.circle,
+          //     color: currentStrokeColor,
+          //   ),
+          // ),
           FloatingActionButton(
               backgroundColor: currentStrokeColor,
               onPressed: onColorChangePress,
