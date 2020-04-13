@@ -18,11 +18,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Draw with some friends',
+      title: 'Draw with Flutter',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Draw with friends'),
+      home: MyHomePage(title: 'Draw with Flutter'),
     );
   }
 }
