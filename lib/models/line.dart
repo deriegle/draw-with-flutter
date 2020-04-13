@@ -6,7 +6,7 @@ class Line {
   double strokeWidth;
   Path path;
 
-  Line(this.offsets, this.strokeWidth, this.color);
+  Line(this.offsets, this.strokeWidth, [this.color = Colors.red]);
 
   getPathFromOffset() {
     if (offsets.length == 10) {

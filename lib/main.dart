@@ -97,10 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
         }),
         onViewPress: () => Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (ctx) => ViewDrawingPage(
-              getPictureFromCanvas(_lines),
-              size: MediaQuery.of(context).size,
-            ),
+            builder: (ctx) => ViewDrawingPage(_lines, size: MediaQuery.of(context).size),
             maintainState: true,
           ),
         ),

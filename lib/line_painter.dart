@@ -25,21 +25,23 @@ class LinePainter extends CustomPainter {
 
 extension FromPaint on Paint {
   Paint from(Paint oldPaint) {
-    return Paint()
-      ..blendMode = oldPaint.blendMode
-      ..color = oldPaint.color
-      ..colorFilter = oldPaint.colorFilter
-      ..filterQuality = oldPaint.filterQuality
-      ..imageFilter = oldPaint.imageFilter
-      ..invertColors = oldPaint.invertColors
-      ..isAntiAlias = oldPaint.isAntiAlias
-      ..maskFilter = oldPaint.maskFilter
-      ..shader = oldPaint.shader
-      ..strokeCap = oldPaint.strokeCap
-      ..strokeJoin = oldPaint.strokeJoin
-      ..strokeMiterLimit = oldPaint.strokeMiterLimit
-      ..strokeWidth = oldPaint.strokeWidth
-      ..style = oldPaint.style;
+    var newPaint = Paint();
+
+    newPaint.blendMode = oldPaint.blendMode ?? newPaint.blendMode;
+    newPaint.color = oldPaint.color ?? newPaint.color;
+    newPaint.colorFilter = oldPaint.colorFilter ?? newPaint.colorFilter;
+    newPaint.filterQuality = oldPaint.filterQuality ?? newPaint.filterQuality;
+    newPaint.imageFilter = oldPaint.imageFilter ?? newPaint.imageFilter;
+    newPaint.invertColors = oldPaint.invertColors ?? newPaint.invertColors;
+    newPaint.isAntiAlias = oldPaint.isAntiAlias ?? newPaint.isAntiAlias;
+    newPaint.maskFilter = oldPaint.maskFilter ?? newPaint.maskFilter;
+    newPaint.shader = oldPaint.shader ?? newPaint.shader;
+    newPaint.strokeCap = oldPaint.strokeCap ?? newPaint.strokeCap;
+    newPaint.strokeJoin = oldPaint.strokeJoin ?? newPaint.strokeJoin;
+    newPaint.strokeMiterLimit = oldPaint.strokeMiterLimit ?? newPaint.strokeMiterLimit;
+    newPaint.strokeWidth = oldPaint.strokeWidth ?? newPaint.strokeWidth;
+    newPaint.style = oldPaint.style ?? newPaint.style;
+    return newPaint;
   }
 }
 
@@ -60,7 +62,7 @@ Picture getPictureFromCanvas(List<Line> lines) {
 void generateImage(Canvas canvas, List<Line> lines, Paint paint) async {
   lines.forEach((line) {
     var linePaint = Paint().from(paint)
-      ..color = line.color
+      ..color = line.color ?? Colors.red
       ..strokeWidth = line.strokeWidth;
 
     if (line.path != null) {
