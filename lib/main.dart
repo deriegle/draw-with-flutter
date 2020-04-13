@@ -1,9 +1,17 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:drawful_impl/action_buttons.dart';
+import 'package:drawful_impl/line_painter.dart';
 import 'package:flutter/material.dart';
+import 'package:drawful_impl/models/line.dart';
 
 void main() => runApp(MyApp());
+
+const MAX_POINT_SIZE = 20.0;
+const MIN_POINT_SIZE = 1.0;
+const INCREMENT = 2;
+const List<Color> COLORS = Colors.primaries;
 
 class MyApp extends StatelessWidget {
   @override
@@ -25,21 +33,6 @@ class MyHomePage extends StatefulWidget {
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
-}
-
-const MAX_POINT_SIZE = 20.0;
-const MIN_POINT_SIZE = 1.0;
-const INCREMENT = 2;
-
-const List<Color> COLORS = Colors.primaries;
-
-class Line {
-  Color color;
-  List<Offset> offsets;
-  double strokeWidth;
-  Path path;
-
-  Line(this.offsets, this.strokeWidth, this.color);
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -71,22 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
             return;
           }
 
-          setState(() {
-            var path = Path();
-
-            for (var i = 0; i < currentLine.offsets.length; i++) {
-              var offset = currentLine.offsets[i];
-
-              if (i == 0) {
-                path.moveTo(offset.dx, offset.dy);
-              } else {
-                path.lineTo(offset.dx, offset.dy);
-              }
-            }
-
-            currentLine.offsets = [];
-            currentLine.path = path;
-          });
+          setState(() => currentLine.getPathFromOffset());
         },
         child: Center(
           child: CustomPaint(
@@ -136,88 +114,4 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return COLORS[randomIndex];
   }
-}
-
-class ActionButtons extends StatelessWidget {
-  final double currentStrokeWidth;
-  final Color currentStrokeColor;
-  final Function onColorChangePress;
-  final Function onStrokeIncrement;
-  final Function onStrokeDecrement;
-  final Function onClearPress;
-
-  ActionButtons({
-    this.currentStrokeColor,
-    this.currentStrokeWidth,
-    this.onColorChangePress,
-    this.onStrokeIncrement,
-    this.onStrokeDecrement,
-    this.onClearPress,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 250,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          FloatingActionButton(
-            backgroundColor: currentStrokeColor,
-            onPressed: onColorChangePress,
-            child: Icon(Icons.format_paint),
-          ),
-          FloatingActionButton(
-            backgroundColor: currentStrokeWidth == MAX_POINT_SIZE ? Colors.grey : Colors.blue,
-            onPressed: onStrokeIncrement,
-            child: Icon(Icons.add),
-          ),
-          FloatingActionButton(
-            backgroundColor: currentStrokeWidth == MIN_POINT_SIZE ? Colors.grey : Colors.blue,
-            onPressed: onStrokeDecrement,
-            child: Icon(Icons.remove),
-          ),
-          FloatingActionButton(
-            onPressed: onClearPress,
-            child: Icon(Icons.delete),
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class LinePainter extends CustomPainter {
-  List<Line> _lines;
-
-  LinePainter(this._lines) : super();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    _lines.forEach((line) {
-      final paint = Paint()
-        ..color = line.color
-        ..strokeWidth = line.strokeWidth
-        ..isAntiAlias = true
-        ..strokeCap = StrokeCap.round
-        ..style = PaintingStyle.stroke
-        ..strokeJoin = StrokeJoin.round;
-
-      if (line.path != null) {
-        canvas.drawPath(line.path, paint);
-        return;
-      }
-
-      if (line.offsets.length > 1) {
-        for (var i = 0; i < line.offsets.length - 1; i++) {
-          canvas.drawLine(line.offsets[i], line.offsets[i + 1], paint);
-        }
-      } else {
-        canvas.drawPoints(PointMode.points, line.offsets, paint);
-      }
-    });
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
