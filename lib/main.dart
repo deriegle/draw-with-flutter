@@ -27,7 +27,7 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-const MAX_POINT_SIZE = 10.0;
+const MAX_POINT_SIZE = 20.0;
 const MIN_POINT_SIZE = 1.0;
 const INCREMENT = 2;
 
@@ -37,6 +37,7 @@ class Line {
   Color color;
   List<Offset> offsets;
   double strokeWidth;
+  Path path;
 
   Line(this.offsets, this.strokeWidth, this.color);
 }
@@ -63,10 +64,33 @@ class _MyHomePageState extends State<MyHomePage> {
             _lines.last.offsets.add(details.localPosition);
           });
         },
-        onPanEnd: (details) {},
+        onPanEnd: (details) {
+          Line currentLine = _lines.last;
+
+          if (currentLine.offsets.length == 10) {
+            return;
+          }
+
+          setState(() {
+            var path = Path();
+
+            for (var i = 0; i < currentLine.offsets.length; i++) {
+              var offset = currentLine.offsets[i];
+
+              if (i == 0) {
+                path.moveTo(offset.dx, offset.dy);
+              } else {
+                path.lineTo(offset.dx, offset.dy);
+              }
+            }
+
+            currentLine.offsets = [];
+            currentLine.path = path;
+          });
+        },
         child: Center(
           child: CustomPaint(
-            painter: DrawfulPainter(this._lines),
+            painter: LinePainter(this._lines),
             child: Container(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
@@ -138,18 +162,11 @@ class ActionButtons extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          // Container(
-          //   height: currentStrokeWidth,
-          //   width: currentStrokeWidth,
-          //   decoration: BoxDecoration(
-          //     shape: BoxShape.circle,
-          //     color: currentStrokeColor,
-          //   ),
-          // ),
           FloatingActionButton(
-              backgroundColor: currentStrokeColor,
-              onPressed: onColorChangePress,
-              child: Icon(Icons.format_paint)),
+            backgroundColor: currentStrokeColor,
+            onPressed: onColorChangePress,
+            child: Icon(Icons.format_paint),
+          ),
           FloatingActionButton(
             backgroundColor: currentStrokeWidth == MAX_POINT_SIZE ? Colors.grey : Colors.blue,
             onPressed: onStrokeIncrement,
@@ -170,10 +187,10 @@ class ActionButtons extends StatelessWidget {
   }
 }
 
-class DrawfulPainter extends CustomPainter {
+class LinePainter extends CustomPainter {
   List<Line> _lines;
 
-  DrawfulPainter(this._lines) : super();
+  LinePainter(this._lines) : super();
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -182,7 +199,14 @@ class DrawfulPainter extends CustomPainter {
         ..color = line.color
         ..strokeWidth = line.strokeWidth
         ..isAntiAlias = true
-        ..strokeCap = StrokeCap.round;
+        ..strokeCap = StrokeCap.round
+        ..style = PaintingStyle.stroke
+        ..strokeJoin = StrokeJoin.round;
+
+      if (line.path != null) {
+        canvas.drawPath(line.path, paint);
+        return;
+      }
 
       if (line.offsets.length > 1) {
         for (var i = 0; i < line.offsets.length - 1; i++) {
