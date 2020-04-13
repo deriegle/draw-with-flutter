@@ -9,6 +9,10 @@ class Line {
   Line(this.offsets, this.strokeWidth, this.color);
 
   getPathFromOffset() {
+    if (offsets.length == 10) {
+      return;
+    }
+
     var path = Path();
 
     for (var i = 0; i < offsets.length; i++) {
