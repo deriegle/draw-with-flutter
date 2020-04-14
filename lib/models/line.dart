@@ -29,19 +29,22 @@ class Line {
     path = path;
   }
 
-  Map<String, dynamic> toJSON() {
+  Map<String, dynamic> toJson() {
     return {
       'color': color.value,
       'strokeWidth': strokeWidth,
-      'offsets': offsets.map((offset) => offset.toJSON()),
+      'offsets': offsets.map((offset) => offset.toJSON()).toList(),
     };
   }
 
   factory Line.fromJSON(Map<String, dynamic> json) {
+    var strokeWidth = double.tryParse(json['strokeWidth'].toString()) ?? MIN_POINT_SIZE;
+    var color = Color(int.tryParse(json['color'].toString()));
+    var offsets = offsetsFromJSON(json['offsets']);
     var newLine = Line(
-      offsetsFromJSON(json['offsets']),
-      json['strokeWidth'] ?? MIN_POINT_SIZE,
-      Color(json['color']),
+      offsets,
+      strokeWidth,
+      color,
     );
 
     if (newLine.offsets.length > 0) {
@@ -57,7 +60,10 @@ List<Offset> offsetsFromJSON(List<dynamic> json) {
     return List<Offset>();
   }
 
-  return List.from(json).map((offset) => Offset(offset['x'], offset['y'])).toList();
+  return List.from(json)
+      .map((offset) =>
+          Offset(double.tryParse(offset['x'].toString()), double.tryParse(offset['y'].toString())))
+      .toList();
 }
 
 extension OffsetJSON on Offset {
