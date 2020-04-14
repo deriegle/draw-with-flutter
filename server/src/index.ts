@@ -12,6 +12,7 @@ const lines: ILine[] = []
 // TODO: Add ping/pong for checking for unresponsive clients
 webSocketServer.on('connection', (ws: WebSocket) => {
   ws.on('message', (message: string) => {
+    console.log('new message');
     const newLines = parseILineFromString(message);
 
     if (newLines === null) {
@@ -40,7 +41,12 @@ webSocketServer.on('connection', (ws: WebSocket) => {
     }
   });
 
-  ws.send(`Hello there, I am WebSocket server`);
+  ws.send(JSON.stringify({
+    message: `${lines.length} lines on server right now`,
+    added: 0,
+    total: lines.length,
+    lines,
+  }));
 });
 
 const port = process.env.PORT || 8080;
