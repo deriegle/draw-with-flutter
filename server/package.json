@@ -7,7 +7,7 @@
     "start": "ts-node src/index.ts"
   },
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "ws": "^7.2.3"
   },
   "devDependencies": {
